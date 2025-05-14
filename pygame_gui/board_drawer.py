@@ -53,33 +53,43 @@ class BoardDrawer:
         for start, end in self.snakes.items():
             start_row, start_col = divmod(start - 1, 10)
             end_row, end_col = divmod(end - 1, 10)
-            
+
+            # Adjust columns for snake-like pattern:
+            if start_row % 2 == 1:
+                start_col = 9 - start_col
+            if end_row % 2 == 1:
+                end_col = 9 - end_col
+
             start_x = start_col * self.cell_size + self.cell_size // 2
-            start_y = (9 - start_row) * self.cell_size + self.cell_size // 2  # No header adjustment here
+            start_y = (9 - start_row) * self.cell_size + self.cell_size // 2
             end_x = end_col * self.cell_size + self.cell_size // 2
-            end_y = (9 - end_row) * self.cell_size + self.cell_size // 2  # No header adjustment here
-            
-            # Draw the snake body as a curved line (optional: use a zigzag)
+            end_y = (9 - end_row) * self.cell_size + self.cell_size // 2
+
+            # Draw snake line and head
             pygame.draw.line(self.screen, (255, 0, 0), (start_x, start_y), (end_x, end_y), 5)
-            
-            # Snake head (start point)
             pygame.draw.circle(self.screen, (255, 0, 0), (start_x, start_y), 10)
 
     def draw_ladders(self):
         for start, end in self.ladders.items():
             start_row, start_col = divmod(start - 1, 10)
             end_row, end_col = divmod(end - 1, 10)
-            
+
+            # Adjust columns for snake-like numbering
+            if start_row % 2 == 1:
+                start_col = 9 - start_col
+            if end_row % 2 == 1:
+                end_col = 9 - end_col
+
             start_x = start_col * self.cell_size + self.cell_size // 2
-            start_y = (9 - start_row) * self.cell_size + self.cell_size // 2  # No header adjustment here
+            start_y = (9 - start_row) * self.cell_size + self.cell_size // 2
             end_x = end_col * self.cell_size + self.cell_size // 2
-            end_y = (9 - end_row) * self.cell_size + self.cell_size // 2  # No header adjustment here
-            
+            end_y = (9 - end_row) * self.cell_size + self.cell_size // 2
+
             # Offset for ladder side rails
             offset = 10
             pygame.draw.line(self.screen, (0, 255, 0), (start_x - offset, start_y), (end_x - offset, end_y), 3)
             pygame.draw.line(self.screen, (0, 255, 0), (start_x + offset, start_y), (end_x + offset, end_y), 3)
-            
+
             # Draw rungs
             num_rungs = 5
             for i in range(num_rungs + 1):

@@ -1,4 +1,5 @@
 import pygame
+import os
 from pygame_gui.board_drawer import BoardDrawer
 from pygame_gui.game_controller import GameController
 
@@ -45,6 +46,16 @@ def draw_start_screen(screen, font, large_font):
 
 def main():
     pygame.init()
+    pygame.mixer.init()  # Initialize the mixer module for audio
+
+    # Get the absolute path to the music file
+    music_file_path = os.path.join(os.path.dirname(__file__), 'assets', 'background.mp3')
+
+    # Load and play background music
+    pygame.mixer.music.load(music_file_path)
+    pygame.mixer.music.set_volume(0.4)  # Set the volume (0.0 to 1.0)
+    pygame.mixer.music.play(-1, 0.0)  # Loop the music (-1 for infinite loop)
+
     screen = pygame.display.set_mode((WINDOW_SIZE_LENGTH, WINDOW_SIZE_BREADTH))
     pygame.display.set_caption("Snake and Ladder")
 

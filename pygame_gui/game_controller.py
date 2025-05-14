@@ -1,5 +1,4 @@
-# pygame_gui/game_controller.py
-
+import os
 import pygame
 import random
 from game.board import snakes, ladders  # Importing from boards.py
@@ -11,13 +10,10 @@ def get_random_player_color(forbidden_colors):
         if color not in forbidden_colors:
             return color
 
-# Function to generate a random player color from a predefined list
-# def get_random_player_color(available_colors):
-#     return random.choice(available_colors)
-
 class GameController:
     def __init__(self, board):
         self.board = board
+        pygame.mixer.init()  # Initialize the mixer module for audio
 
         # List of acceptable colors (excluding green)
         self.forbidden_colors = [(255, 0, 0), (0, 255, 0), (255, 255, 255), (0, 0, 0), (255, 218, 185), (255, 255, 153), (204, 255, 204)]
@@ -30,6 +26,26 @@ class GameController:
         self.font = pygame.font.SysFont(None, 32)
         self.dice_result = None
         self.winner = None  # Track winner
+
+        # Initialize the sound effect for dice roll
+        dice_roll_file_path = os.path.join(os.path.dirname(__file__), 'assets', 'dice_roll.mp3')
+        self.dice_roll_sound = pygame.mixer.Sound(dice_roll_file_path)
+        self.dice_roll_sound.set_volume(0.3)  # Set volume (30%)
+
+        # Initialize the sound effect for ladder climb
+        ladder_sound_path = os.path.join(os.path.dirname(__file__), 'assets', 'ladder_climb.mp3')
+        self.ladder_sound = pygame.mixer.Sound(ladder_sound_path)
+        self.ladder_sound.set_volume(0.9)  # Set volume (90%)
+
+        # Initialize the sound effect for snake bite
+        snake_bite_sound_path = os.path.join(os.path.dirname(__file__), 'assets', 'snake_bite.mp3')
+        self.snake_bite_sound = pygame.mixer.Sound(snake_bite_sound_path)
+        self.snake_bite_sound.set_volume(0.9)  # Set volume (90%)
+
+        # Initialize the sound effect for congratulations message
+        congratulations_message_sound_path = os.path.join(os.path.dirname(__file__), 'assets', 'congratulations_message.mp3')
+        self.congratulations_message_sound = pygame.mixer.Sound(congratulations_message_sound_path)
+        self.congratulations_message_sound.set_volume(0.9)  # Set volume (90%)
 
     def update(self):
         self.draw_players()
@@ -111,6 +127,10 @@ class GameController:
 
         if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
             self.dice_result = random.randint(1, 6)
+
+            # Play the dice roll sound
+            self.dice_roll_sound.play()
+
             player = self.players[self.current_player]
             player['pos'] += self.dice_result
             if player['pos'] > 100:
@@ -120,6 +140,7 @@ class GameController:
 
             if player['pos'] == 100:
                 self.winner = f"{player['name']}"
+                self.congratulations_message_sound.play()
                 return
 
             self.current_player = (self.current_player + 1) % len(self.players)
@@ -138,7 +159,12 @@ class GameController:
 
     def snake_or_ladder(self, pos):
         if pos in snakes:
-            pos = snakes[pos]
+            new_pos = snakes[pos]
+            self.snake_bite_sound.play()
+            return new_pos
         elif pos in ladders:
-            pos = ladders[pos]
+            new_pos = ladders[pos]
+            self.ladder_sound.play()
+            return new_pos
         return pos
+
